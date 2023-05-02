@@ -1,0 +1,28 @@
+{
+    "name": "lingyun/think-accessibility",
+    "authors": [
+        {
+            "name": "ouyanglingyun",
+            "email": "582194733@qq.com"
+        }
+    ],
+    "require": {
+        "nunomaduro/termwind": "^1.15"
+    },
+    "autoload": {
+        "psr-4": {
+            "lingyun\\": "src"
+        },
+        "files": [
+            "src/helper.php"
+        ]
+    },
+    "extra": {
+        "think": {
+            "services": [
+                "lingyun\\AccessibilityService"
+            ],
+            "config": {}
+        }
+    }
+}
