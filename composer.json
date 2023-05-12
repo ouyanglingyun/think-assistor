@@ -27,5 +27,6 @@
                 "lingyun\\AccessibilityService"
             ]
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
