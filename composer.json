@@ -1,6 +1,7 @@
 {
     "name": "lingyun/think-accessibility",
     "type": "think-extend",
+    "description": "Some enhancements to thinkphp6.",
     "homepage": "https://github.com/ouyanglingyun",
     "license": "Apache-2.0",
     "authors": [
