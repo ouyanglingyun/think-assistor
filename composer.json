@@ -1,5 +1,8 @@
 {
     "name": "lingyun/think-accessibility",
+    "type": "think-extend",
+    "homepage": "https://github.com/ouyanglingyun",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "ouyanglingyun",
@@ -7,6 +10,7 @@
         }
     ],
     "require": {
+        "topthink/framework": "^6.0",
         "nunomaduro/termwind": "^1.15"
     },
     "autoload": {
@@ -21,8 +25,7 @@
         "think": {
             "services": [
                 "lingyun\\AccessibilityService"
-            ],
-            "config": {}
+            ]
         }
     }
 }
