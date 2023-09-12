@@ -1,6 +1,6 @@
 <?php
 
-namespace lingyun\console\components;
+namespace think\assistor\console\components;
 
 use Throwable;
 use function Termwind\terminal;

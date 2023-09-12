@@ -1,6 +1,6 @@
 <?php
 
-namespace lingyun\middleware;
+namespace think\assistor\middleware;
 
 use Closure;
 use think\View;

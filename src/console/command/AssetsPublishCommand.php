@@ -1,15 +1,15 @@
 <?php
 
-namespace lingyun\console\command;
+namespace think\assistor\console\command;
 
 use League\Flysystem\Filesystem as Flysystem;
 use League\Flysystem\Local\LocalFilesystemAdapter as LocalAdapter;
 use League\Flysystem\MountManager;
 use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
 use League\Flysystem\Visibility;
-use lingyun\console\trait\InteractsWithIO;
-use lingyun\events\AssetsTagPublished;
-use lingyun\support\ServiceProvider;
+use think\assistor\console\trait\InteractsWithIO;
+use think\assistor\events\AssetsTagPublished;
+use think\assistor\support\ServiceAssistor;
 use think\console\Command;
 use think\console\input\Option;
 use think\helper\Arr;
@@ -104,8 +104,8 @@ class AssetsPublishCommand extends Command
     {
         return array_merge(
             ['<comment>Publish files from all providers and tags listed below</comment>'],
-            preg_filter('/^/', '<fg=cyan>Provider:</> ', Arr::sort(ServiceProvider::publishableProviders())),
-            preg_filter('/^/', '<fg=cyan>Tag:</> ', Arr::sort(ServiceProvider::publishableGroups()))
+            preg_filter('/^/', '<fg=cyan>Provider:</> ', Arr::sort(ServiceAssistor::publishableProviders())),
+            preg_filter('/^/', '<fg=cyan>Tag:</> ', Arr::sort(ServiceAssistor::publishableGroups()))
         );
     }
 
@@ -134,8 +134,6 @@ class AssetsPublishCommand extends Command
      */
     protected function publishTag($tag)
     {
-        $published = false;
-
         $pathsToPublish = $this->pathsToPublish($tag);
         if ($publishing = count($pathsToPublish) > 0) {
             $this->components->info(sprintf(
@@ -164,7 +162,7 @@ class AssetsPublishCommand extends Command
      */
     protected function pathsToPublish($tag)
     {
-        return ServiceProvider::pathsToPublish(
+        return ServiceAssistor::pathsToPublish(
             $this->provider,
             $tag
         );

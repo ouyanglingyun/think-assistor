@@ -1,7 +1,7 @@
 {
-    "name": "lingyun/think-accessibility",
+    "name": "lingyun/think-assistor",
     "type": "think-extend",
-    "description": "Some enhancements to thinkphp6.",
+    "description": "ThinkPHP6 composer extension package development assistor.<br/>thinkphp6 扩展包开发的一些辅助工具。",
     "homepage": "https://github.com/ouyanglingyun",
     "license": "Apache-2.0",
     "authors": [
@@ -11,12 +11,15 @@
         }
     ],
     "require": {
-        "topthink/framework": "^6.0",
+        "topthink/framework": "^6.0||^8.0",
+        "lingyun/think-migration": "^3.0",
         "nunomaduro/termwind": "^1.15"
+    },
+    "require-dev": {
     },
     "autoload": {
         "psr-4": {
-            "lingyun\\": "src"
+            "think\\assistor\\": "src"
         },
         "files": [
             "src/helper.php"
@@ -25,7 +28,7 @@
     "extra": {
         "think": {
             "services": [
-                "lingyun\\AccessibilityService"
+                "think\\assistor\\Service"
             ]
         }
     },

@@ -1,8 +1,10 @@
 <?php
 
 use think\Model;
+use think\Response;
 use think\facade\Session;
 use think\helper\Arr;
+use think\response\View;
 
 if (!function_exists('old')) {
     /**
@@ -24,7 +26,7 @@ if (!function_exists('gravatar')) {
 
     function gravatar(string $email = null, int $size = 100, string $mode = null)
     {
-        return \lingyun\support\Gravatar::gravatarUrl($email, $size, $mode);
+        return \think\assistor\support\Gravatar::gravatarUrl($email, $size, $mode);
     }
 }
 

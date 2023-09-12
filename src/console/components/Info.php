@@ -1,6 +1,6 @@
 <?php
 
-namespace lingyun\console\components;
+namespace think\assistor\console\components;
 
 class Info extends Component
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace lingyun\traits;
+namespace think\assistor\traits;
 
 use Carbon\Carbon;
 use DateInterval;

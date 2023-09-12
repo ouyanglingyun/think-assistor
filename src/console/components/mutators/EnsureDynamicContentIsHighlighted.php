@@ -1,6 +1,6 @@
 <?php
 
-namespace lingyun\console\components\mutators;
+namespace think\assistor\console\components\mutators;
 
 class EnsureDynamicContentIsHighlighted
 {

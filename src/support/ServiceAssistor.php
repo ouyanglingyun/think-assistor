@@ -1,15 +1,14 @@
 <?php
 
-namespace lingyun\support;
+namespace think\assistor\support;
 
-use Faker\Generator as FakerGenerator;
-use lingyun\view\FileViewFinder;
+use Faker\Generator;
 use think\App;
 use think\Lang;
+use think\assistor\support\FileViewFinder;
 use think\migration\Factory;
-use think\migration\MigratorProvider;
 
-class ServiceProvider
+class ServiceAssistor
 {
     /**
      * The paths that should be published.
@@ -162,10 +161,10 @@ class ServiceProvider
      */
     protected function callAfterResolving($name, $callback)
     {
+        $this->app->resolving($name, $callback);
         if ($this->app->has($name)) {
             $callback($this->app->make($name), $this->app);
         }
-        $this->app->resolving($name, $callback);
     }
 
     /**
@@ -173,24 +172,31 @@ class ServiceProvider
      *
      * @param  string|array  $path
      * @param  string  $namespace
+     * @param bool $publishes
      * @return void
      */
-    public function loadViewsFrom($path, $namespace)
+    public function loadViewsFrom($path, $namespace, $publishes = true)
     {
-        $this->callAfterResolving('view.finder', function (FileViewFinder $viewFinder) use ($path, $namespace) {
-            $config = $this->app->config->get('view', []);
-            $view = $config['view_dir_name'];
+        $this->callAfterResolving('view.finder', function (FileViewFinder $viewFinder) use ($path, $namespace, $publishes) {
+            $config      = $this->app->config->get('view', []);
+            $view        = $config['view_dir_name'];
             $appViewPath = $this->app->getAppPath() . $view . DIRECTORY_SEPARATOR;
 
-            if (is_dir($appPath = $appViewPath . '/vendor/' . $namespace)) {
-                $viewFinder->addNamespace($namespace, $appPath);
+            if (is_dir($viewPath = $appViewPath . 'vendor' . DIRECTORY_SEPARATOR . $namespace)) {
+                $viewFinder->addNamespace($namespace, $viewPath);
+                $publishes && $this->publishes([
+                    $path => $viewPath,
+                ], $namespace . '-views');
             }
 
-            $appName = $this->app->http->getName();
-            $rootViewPath    = $this->app->getRootPath() . $view . DIRECTORY_SEPARATOR . ($appName ? $appName . DIRECTORY_SEPARATOR : '');
+            $appName      = $this->app->http->getName();
+            $rootViewPath = $this->app->getRootPath() . $view . DIRECTORY_SEPARATOR . ($appName ? $appName . DIRECTORY_SEPARATOR : '');
 
-            if (is_dir($appPath = $rootViewPath . '/vendor/' . $namespace)) {
-                $viewFinder->addNamespace($namespace, $appPath);
+            if (is_dir($viewPath = $rootViewPath . 'vendor' . DIRECTORY_SEPARATOR . $namespace)) {
+                $viewFinder->addNamespace($namespace, $viewPath);
+                $publishes && $this->publishes([
+                    $path => $viewPath,
+                ], $namespace . '-views');
             }
 
             $viewFinder->addNamespace($namespace, $path);
@@ -205,7 +211,7 @@ class ServiceProvider
      */
     public function loadMigrationsFrom($paths)
     {
-        $this->callAfterResolving('migration.migrator', function (MigratorProvider $migrator) use ($paths) {
+        $this->callAfterResolving('migration.migrator', function ($migrator) use ($paths) {
             foreach ((array) $paths as $path) {
                 $migrator->path($path);
             }
@@ -237,21 +243,20 @@ class ServiceProvider
     public function loadTranslationsFrom($path)
     {
         $this->callAfterResolving('lang', function (Lang $lang) use ($path) {
-            $files = glob($path . DIRECTORY_SEPARATOR .  '*.*');
-
-            foreach ((array)$files as $file) {
+            $files = glob($path . DIRECTORY_SEPARATOR . '*.*');
+            foreach ((array) $files as $file) {
                 $lang->load($file, str_replace('.' . pathinfo($file, PATHINFO_EXTENSION), '', basename($file)));
             }
         });
     }
 
-    public function addFakerProvider($provider)
+    public function loadFakerProvider($provider)
     {
-        $this->callAfterResolving(FakerGenerator::class, function (FakerGenerator $faker) use ($provider) {
+        $this->callAfterResolving(Generator::class, function (Generator $generator) use ($provider) {
             if (is_string($provider)) {
-                $provider =  new $provider($faker);
+                $provider = new $provider($generator);
             }
-            $faker->addProvider($provider);
+            $generator->addProvider($provider);
         });
     }
 }

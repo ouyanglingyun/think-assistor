@@ -1,8 +1,8 @@
 <?php
 
-namespace lingyun\console\trait;
+namespace think\assistor\console\trait;
 
-use lingyun\console\components\Factory;
+use think\assistor\console\components\Factory;
 use think\console\Input;
 use think\console\Output;
 use think\facade\Console;
@@ -13,7 +13,7 @@ trait InteractsWithIO
     /**
      * The console components factory.
      *
-     * @var \lingyun\console\components\Factory
+     * @var \think\assistor\console\components\Factory
      *
      * @internal This property is not meant to be used or overwritten outside the framework.
      */
@@ -86,16 +86,11 @@ trait InteractsWithIO
 
     protected function call(string $command, array $parameters = [], string $driver = 'Console')
     {
-        // $start            = microtime(true);
-        // $outputParameters = implode(' ', $parameters);
-        // $this->output->writeln("======= <info>[{$command} {$outputParameters}]</info> <comment>Runing.</comment>");
         if (strtolower($driver) == 'buffer') {
             $this->output->write(Console::call($command, $parameters, $driver)->fetch());
         } else {
             Console::call($command, $parameters, $driver);
         }
-        // $end = microtime(true);
-        // $this->output->writeln("======= <info>[{$command} {$outputParameters}]</info> <comment>Done." . ' ' . sprintf('%.4fs', $end - $start) . "</comment>");
         $this->newLine();
     }
 

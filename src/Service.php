@@ -1,31 +1,43 @@
 <?php
 
-namespace lingyun;
+namespace think\assistor;
 
-use lingyun\console\command\AssetsPublishCommand;
-use lingyun\migration\faker\Gravatar;
-use lingyun\support\ServiceProvider;
-use lingyun\view\FileViewFinder;
 use think\App;
+use think\assistor\console\command\AssetsPublishCommand;
+use think\assistor\support\AuthManager;
+use think\assistor\support\FileViewFinder;
+use think\assistor\support\ServiceAssistor;
+use yunwuxin\Auth;
 
-class AccessibilityService extends \think\Service
-
+class Service extends \think\Service
 {
     public function register()
     {
+        $this->bindAuthManager();
         $this->registerServiceAssistor();
         $this->registerViewFinder();
         $this->setExceptionTemplate();
     }
-    public function boot()
-    {
-        $this->commands([
-            AssetsPublishCommand::class,
-        ]);
 
-        if ($this->app->runningInConsole()) {
-            $this->app->get('service.assistor')->addFakerProvider(Gravatar::class);
-        }
+    public function bindAuthManager()
+    {
+        $this->app->bind(Auth::class, AuthManager::class);
+    }
+
+    public function registerServiceAssistor()
+    {
+        $this->app->bind('service.assistor', ServiceAssistor::class);
+    }
+    /**
+     * Register the view finder implementation.
+     *
+     * @return void
+     */
+    public function registerViewFinder()
+    {
+        $this->app->bind('view.finder', function (App $app) {
+            return new FileViewFinder((array) $app->config->get('view.view_path'), (array) $app->config->get('view.view_suffix'));
+        });
     }
 
     public function setExceptionTemplate()
@@ -48,20 +60,8 @@ class AccessibilityService extends \think\Service
         }
     }
 
-    public function registerServiceAssistor()
+    public function boot()
     {
-        $this->app->bind('service.assistor', ServiceProvider::class);
-    }
-
-    /**
-     * Register the view finder implementation.
-     *
-     * @return void
-     */
-    public function registerViewFinder()
-    {
-        $this->app->bind('view.finder', function (App $app) {
-            return new FileViewFinder((array) $app->config->get('view.view_path'), (array) $app->config->get('view.view_suffix'));
-        });
+        $this->commands([AssetsPublishCommand::class]);
     }
 }

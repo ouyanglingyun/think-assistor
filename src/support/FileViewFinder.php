@@ -1,8 +1,9 @@
 <?php
 
-namespace think\view;
+namespace think\assistor\support;
 
 use InvalidArgumentException;
+use think\facade\View;
 
 class FileViewFinder
 {
@@ -68,11 +69,12 @@ class FileViewFinder
         if (isset($this->views[$name])) {
             return $this->views[$name];
         }
-
         if ($this->hasHintInformation($name = trim($name))) {
             return $this->views[$name] = $this->findNamespacedView($name);
         }
-
+        if (empty($this->paths)) {
+            return $this->views[$name] = $name;
+        }
         return $this->views[$name] = $this->findInPaths($name, $this->paths);
     }
 
@@ -85,7 +87,6 @@ class FileViewFinder
     protected function findNamespacedView($name)
     {
         [$namespace, $view] = $this->parseNamespaceSegments($name);
-
         return $this->findInPaths($view, $this->hints[$namespace]);
     }
 
@@ -108,7 +109,6 @@ class FileViewFinder
         if (!isset($this->hints[$segments[0]])) {
             throw new InvalidArgumentException("No hint path defined for [{$segments[0]}].");
         }
-
         return $segments;
     }
 
@@ -125,12 +125,11 @@ class FileViewFinder
     {
         foreach ((array) $paths as $path) {
             foreach ($this->getPossibleViewFiles($name) as $file) {
-                if (file_exists($viewPath = $path . '/' . $file)) {
+                if (file_exists($viewPath = $path . DIRECTORY_SEPARATOR . $file)) {
                     return $viewPath;
                 }
             }
         }
-
         throw new InvalidArgumentException("View [{$name}] not found.");
     }
 
@@ -249,7 +248,6 @@ class FileViewFinder
      */
     public function hasHintInformation($name)
     {
-
         return strpos($name, static::HINT_PATH_DELIMITER) > 0;
     }
 
@@ -314,5 +312,23 @@ class FileViewFinder
     public function getExtensions()
     {
         return $this->extensions;
+    }
+
+    public function __call($name, $arguments)
+    {
+        return self::callViewMethod($name, $arguments);
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        return self::callViewMethod($name, $arguments);
+    }
+
+    private static function callViewMethod($name, $arguments)
+    {
+        if (app()->has('view.finder') && isset($arguments[0]) && !empty($arguments[0])) {
+            $arguments[0] =  app('view.finder')->find($arguments[0]);
+        }
+        return call_user_func_array([View::class, $name], $arguments);
     }
 }

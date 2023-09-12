@@ -1,6 +1,6 @@
 <?php
 
-namespace lingyun\support;
+namespace think\assistor\support;
 
 use think\helper\Str;
 
@@ -28,27 +28,29 @@ class Gravatar
             $mode = static::$MODES[array_rand(static::$MODES)];
         }
         $hash = $email ? md5(Str::lower(trim($email))) : Str::random(12);
+
         return rtrim(static::$url, '/') . "/{$hash}?default={$mode}&size={$size}";
     }
 
-    public static function gravatar(string $dir = null, string $email = null, int $size = 80, string $mode = null, bool $fullPath = true): ?string
+    public static function gravatar(string $email = null, int $size = 80, string $mode = null, string $dir = null, bool $fullPath = true): ?string
     {
-        $dir = $dir ?? sys_get_temp_dir();
+        if ($dir && !is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        $url = static::gravatarUrl($email, $size, $mode);
 
         if (!is_dir($dir) || !is_writable($dir)) {
-            throw new \InvalidArgumentException(sprintf('Cannot write to directory "%s"', $dir));
+            return $url;
         }
 
         $name     = md5(uniqid($_SERVER['SERVER_ADDR'] ?? '', true));
-        $filename = $name . '.jpg';
-        $filepath = $dir . DIRECTORY_SEPARATOR . $filename;
-
-        $url = static::gravatarUrl($email, $size, $mode);
+        $fileName = $name . '.jpg';
+        $filePath = $dir . $fileName;
 
         // save file
         try {
             // use cURL
-            $fp = fopen($filepath, 'w');
+            $fp = fopen($filePath, 'w');
             $client = new \GuzzleHttp\Client();
 
             $response =  $client->get($url, [\GuzzleHttp\RequestOptions::SINK => $fp]);
@@ -56,7 +58,7 @@ class Gravatar
             fclose($fp);
 
             if ($response->getStatusCode() !== 200) {
-                unlink($filepath);
+                unlink($filePath);
                 // could not contact the distant URL or HTTP error - fail silently.
                 return null;
             }
@@ -64,6 +66,6 @@ class Gravatar
             throw $th;
         }
 
-        return $fullPath ? $filepath : $filename;
+        return $fullPath ? $filePath : $fileName;
     }
 }

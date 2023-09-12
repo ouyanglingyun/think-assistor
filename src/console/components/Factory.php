@@ -1,6 +1,6 @@
 <?php
 
-namespace lingyun\console\components;
+namespace think\assistor\console\components;
 
 use InvalidArgumentException;
 
@@ -51,7 +51,7 @@ class Factory
      */
     public function __call($method, $parameters)
     {
-        $component = '\lingyun\console\components\\' . ucfirst($method);
+        $component = '\think\assistor\console\components\\' . ucfirst($method);
 
         throw_unless(class_exists($component), new InvalidArgumentException(sprintf(
             'Console component [%s] not found.',
