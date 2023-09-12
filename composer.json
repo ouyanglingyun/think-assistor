@@ -1,7 +1,7 @@
 {
     "name": "lingyun/think-assistor",
     "type": "think-extend",
-    "description": "ThinkPHP6 composer extension package development assistor.<br/>thinkphp6 扩展包开发的一些辅助工具。",
+    "description": "ThinkPHP6 composer extension package development assistor.\n thinkphp6 扩展包开发的一些辅助工具。",
     "homepage": "https://github.com/ouyanglingyun",
     "license": "Apache-2.0",
     "authors": [
