@@ -28,9 +28,20 @@ class TwoColumnDetail extends Component
             Mutators\EnsureRelativePaths::class,
         ]);
 
-        $this->renderView('two-column-detail', [
-            'first' => $first,
-            'second' => $second,
-        ], $verbosity);
+
+        $firstWidth = mb_strlen(preg_replace("/\<[\w=#\/\;,:.&,%?]+\>|\\e\[\d+m/", '$1', $first) ?? '');
+
+        $this->output->write("  $first ", false, $verbosity);
+
+        $dimensions = $this->output->getTerminalDimensions();
+
+        $width = min($dimensions[0], 180);
+
+        $secondWidth = mb_strlen(preg_replace("/\<[\w=#\/\;,:.&,%?]+\>|\\e\[\d+m/", '$1', $second) ?? '');
+
+        $dots = max($width - $firstWidth - $secondWidth - 6, 0);
+
+        $this->output->write(str_repeat('<fg=cyan>.</>', $dots), false, $verbosity);
+        $this->output->writeln(" $second", false, $verbosity);
     }
 }

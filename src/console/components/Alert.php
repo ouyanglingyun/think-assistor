@@ -13,7 +13,7 @@ class Alert extends Component
      * @param  int  $verbosity
      * @return void
      */
-    public function render($string, $verbosity = Output::VERBOSITY_NORMAL)
+    public function render($string, $verbosity = Output::VERBOSITY_QUIET)
     {
         $string = $this->mutate($string, [
             Mutators\EnsureDynamicContentIsHighlighted::class,
@@ -21,9 +21,39 @@ class Alert extends Component
             Mutators\EnsureRelativePaths::class,
         ]);
 
+        $dimensions = $this->output->getTerminalDimensions();
+
+        $width = $dimensions[0];
+
+        $dots = max($width - 6, 0);
+
         $this->output->writeln(
-            "<fg=green;options=bold;underscore;>{$string} </>",
-            $verbosity,
+            "   " . str_repeat('<bg=yellow;fg=black;options=bold;> </>', $dots) . "   ",
+            $verbosity
+        );
+
+        $stringWidth = mb_strlen(preg_replace("/\<[\w=#\/\;,:.&,%?]+\>|\\e\[\d+m/", '$1', $string) ?? '');
+
+        $spaces = max(($width - $stringWidth - 10) / 2, 0);
+
+        $this->output->write(
+            "   " . str_repeat('<bg=yellow;fg=black;options=bold;> </>', $spaces),
+            $verbosity
+        );
+        $this->output->write(
+            "<bg=yellow;fg=black;options=bold;>  {$string}  </>",
+            $verbosity
+        );
+
+
+        $this->output->writeln(
+            str_repeat('<bg=yellow;fg=black;options=bold;> </>', $spaces) . "   ",
+            $verbosity
+        );
+
+        $this->output->writeln(
+            "   " . str_repeat('<bg=yellow;fg=black;options=bold;> </>', $dots) . "   ",
+            $verbosity
         );
     }
 }

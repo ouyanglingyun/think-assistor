@@ -3,7 +3,6 @@
 namespace think\assistor\console\components;
 
 use Throwable;
-use function Termwind\terminal;
 
 class Task extends Component
 {
@@ -41,7 +40,8 @@ class Task extends Component
                 : '';
 
             $runTimeWidth = mb_strlen($runTime);
-            $width = min(terminal()->width(), 150);
+            $dimensions = $this->output->getTerminalDimensions();
+            $width = min($dimensions[0], 150);
             $dots = max($width - $descriptionWidth - $runTimeWidth - 10, 0);
 
             $this->output->write(str_repeat('<fg=cyan>.</>', $dots), false, $verbosity);

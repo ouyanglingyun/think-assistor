@@ -44,6 +44,6 @@ class Line extends Component
                 );
                 break;
         }
-        $this->output->writeln($string);
+        $this->output->writeln($string, $type);
     }
 }

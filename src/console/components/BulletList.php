@@ -13,7 +13,7 @@ class BulletList extends Component
      * @param  int  $verbosity
      * @return void
      */
-    public function render($elements, $verbosity = Output::VERBOSITY_NORMAL)
+    public function render($elements, $verbosity = Output::VERBOSITY_QUIET)
     {
         $elements = $this->mutate($elements, [
             Mutators\EnsureDynamicContentIsHighlighted::class,
@@ -21,8 +21,8 @@ class BulletList extends Component
             Mutators\EnsureRelativePaths::class,
         ]);
 
-        $this->renderView('bullet-list', [
-            'elements' => $elements,
-        ], $verbosity);
+        foreach ($elements as $element) {
+            $this->output->writeln("  <fg=magenta;options=bold>⇂ $element</>", false, $verbosity);
+        }
     }
 }
