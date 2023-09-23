@@ -3,6 +3,7 @@
 namespace think\assistor\console\components;
 
 use InvalidArgumentException;
+use think\assistor\console\components\Line;
 
 /**
  * @method void alert(string $string, int $verbosity = \think\console\Output::VERBOSITY_NORMAL)
@@ -53,11 +54,16 @@ class Factory
     {
         $component = '\think\assistor\console\components\\' . ucfirst($method);
 
+        if (in_array($method, Line::STYLES)) {
+            array_unshift($parameters, $method);
+            return  tap(new Line($this->output))->render(...$parameters);
+        }
+
         throw_unless(class_exists($component), new InvalidArgumentException(sprintf(
             'Console component [%s] not found.',
             $method
         )));
 
-        return tap(new $component($this->output))->render(...$parameters);
+        tap(new $component($this->output))->render(...$parameters);
     }
 }
